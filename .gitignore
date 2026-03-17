@@ -1,0 +1,19 @@
+# Report outputs (Word documents)
+Reports/*.docx
+Reports/~$*
+
+# R environment
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*~
+*.tmp
+
+# CorelDRAW source files (keep PNGs/JPGs only)
+maps/*.cdr
