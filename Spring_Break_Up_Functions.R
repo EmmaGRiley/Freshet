@@ -91,12 +91,12 @@ Flows <- function(
       
       level.real.time <- tidyhydat::realtime_ws(station_number = station_number, 
                                                    parameters = 47, 
-                                                   start_date = ifelse(max(lubridate::year(level.historic$Date)) == lubridate::year(Sys.Date() - 365), # This 365 may need to change to 730
+                                                   start_date = as.Date(ifelse(max(lubridate::year(level.historic$Date)) == lubridate::year(Sys.Date() - 365), # This 365 may need to change to 730
                                                                        paste(paste(lubridate::year(Sys.Date() - 365)), "01", "01", sep = "-"), 
-                                                                       paste(paste(lubridate::year(Sys.Date() - 730)), "01", "01", sep = "-")),
-                                                   end_date = ifelse(lubridate::year(Sys.Date()) > max(select_years), 
+                                                                       paste(paste(lubridate::year(Sys.Date() - 730)), "01", "01", sep = "-"))),
+                                                   end_date = as.Date(ifelse(lubridate::year(Sys.Date()) > max(select_years), 
                                                                      paste(max(select_years), "12", "31", sep = "-"),
-                                                                     paste(Sys.Date())))
+                                                                     paste(Sys.Date()))))
       
       level.real.time <- level.real.time %>%
         dplyr::group_by(STATION_NUMBER, lubridate::year(Date), lubridate::yday(Date)) %>%
@@ -485,12 +485,12 @@ Levels <- function(
     
     level.real.time <- tidyhydat::realtime_ws(station_number = station_number,
                                                  parameters = 46, 
-                                                 start_date = ifelse(max(lubridate::year(level.historic$Date)) == lubridate::year(Sys.Date() - 365), # This 365 may need to change to 730
+                                                 start_date = as.Date(ifelse(max(lubridate::year(level.historic$Date)) == lubridate::year(Sys.Date() - 365), # This 365 may need to change to 730
                                                                      paste(paste(lubridate::year(Sys.Date() - 365)), "01", "01", sep = "-"), 
-                                                                     paste(paste(lubridate::year(Sys.Date() - 730)), "01", "01", sep = "-")),
-                                                 end_date = ifelse(lubridate::year(Sys.Date()) > max(select_years), 
+                                                                     paste(paste(lubridate::year(Sys.Date() - 730)), "01", "01", sep = "-"))),
+                                                 end_date = as.Date(ifelse(lubridate::year(Sys.Date()) > max(select_years), 
                                                                    paste(max(select_years), "12", "31", sep = "-"),
-                                                                   paste(Sys.Date()-1)))
+                                                                   paste(Sys.Date()-1))))
     
     level.real.time <- level.real.time %>%
       dplyr::group_by(STATION_NUMBER, lubridate::year(Date), lubridate::yday(Date)) %>%
@@ -785,30 +785,34 @@ Double_Level_Plot <- function(
   {
     station <- tidyhydat::allstations %>%
       subset(STATION_NUMBER == station_number)
-    
-    flow.real <- tidyhydat::realtime_ws(station_number = station_number, 
-                                           parameters = 46, 
-                                           start_date = as.Date(paste(lubridate::year(Sys.Date()), start_month, start_day, sep = "-")),
-                                           end_date = Sys.Date())
-    
+
+    flow.real <- tryCatch({
+      tidyhydat::realtime_ws(station_number = station_number,
+                             parameters = 46,
+                             start_date = as.Date(paste(lubridate::year(Sys.Date()), start_month, start_day, sep = "-")),
+                             end_date = Sys.Date())
+    }, error = function(e) {
+      message("Note: No high-res realtime data for ", station_number, ": ", e$message)
+      return(NULL)
+    })
+
+    if(is.null(flow.real) || nrow(flow.real) == 0) {
+      return(NULL)
+    }
+
     flow.real[,2] <- flow.real[,2] - (7*60*60) # Removes seven hours to convert to MT
-    #flow.real$Date <- as.Date(flow.real$Date)
-    
-    plot <- ggplot2::ggplot(flow.real, ggplot2::aes(x = Date, y = Value)) + 
+
+    plot <- ggplot2::ggplot(flow.real, ggplot2::aes(x = Date, y = Value)) +
       ggplot2::geom_point(size = point_size) +
-      #ggplot2::geom_line(linewidth = line_size) +
-      ggplot2::theme_classic() 
-    #ggplot2::labs(#title = paste0(station$STATION_NAME, " (", station$STATION_NUMBER, ")"), 
-    #subtitle = "High Resolution Water Level Data",
-    #x = "Date", y = "Water Level (m)")
-    
+      ggplot2::theme_classic()
+
     if ((is.na(y_min) == F) && (is.na(y_max) == F)) {
-      plot <- plot + 
+      plot <- plot +
         ggplot2::ylim(y_min, y_max)
     }
-    
+
     plot
-    
+
   }
   
   station <- tidyhydat::hy_stations(station_number)
@@ -1013,15 +1017,21 @@ Double_Level_Plot <- function(
   }
   
   plot2 <- Levels.HighRes2(
-    
+
     station_number = station_number, # Water Survey of Canada station number prior.
     y_min = y_min, # Minimum value on y-axis. Note: need to assign both y_min and y_max
     y_max = y_max, # Maximum value on y-axis. Note: need to assign both y_min and y_max
     plot_width = plot_width, # Output width of figure (cm)
     plot_height = plot_height # Output height of figure (cm)
-    
+
   )
-  
+
+  # If no high-res data available, return only the historical plot
+  if(is.null(plot2)) {
+    message("No high-res data for ", station_number, " - returning historical plot only.")
+    return(plot)
+  }
+
   level_max <- max(new.data$Value, na.rm = T)
   
   if(station_number == "10MC023") {
@@ -1339,15 +1349,17 @@ Flows_HighRes <- function(station_number = "07OB001",
                           y_min = NA,
                           y_max = NA,
                           plot_width = 16,
-                          plot_height = 10)
+                          plot_height = 10,
+                          start_date,
+                          end_date)
 {
   station <- tidyhydat::allstations %>%
     subset(STATION_NUMBER == station_number)
   
   flow.real <- tidyhydat::realtime_ws(station_number = station_number, 
                                          parameters = 47, 
-                                         start_date = lubridate::date(Sys.time() - 60*60*24*previous_days),
-                                         end_date = Sys.Date())
+                                         start_date = start_date,
+                                         end_date = end_date)
   
   flow.real[,2] <- flow.real[,2] - (7*60*60) # Removes seven hours to convert to MT
   

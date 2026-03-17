@@ -195,6 +195,7 @@ for(i in Hydrometric_List) {
         station_number = i,
         after_bennett = T,
         save = T,
+        line_colours = c("dodgerblue", "blue4","green4", "red4", "purple4", "yellow4"),
         file_name = paste0(i, " Flow"))
     } else {
       hydro_plot_dayofyear(
@@ -211,6 +212,7 @@ for(i in Hydrometric_List) {
         station_number = i,
         after_bennett = T,
         save = T,
+        line_colours = c("dodgerblue", "blue4","green4", "red4", "purple4", "yellow4"),
         file_name = paste0(i, " Level"))
     } else {
       hydro_plot_dayofyear(
@@ -218,6 +220,7 @@ for(i in Hydrometric_List) {
         select_years = c(2025, 2026),
         station_number = i,
         save = T,
+        line_colours = c("dodgerblue", "blue4","green4", "red4", "purple4", "yellow4"),
         file_name = paste0(i, " Level"))
     }
 
@@ -227,7 +230,7 @@ for(i in Hydrometric_List) {
       start_month = climate_start_month,
       start_day = climate_start_day,
       end_month = lubridate::month(Sys.Date()),
-      end_day = lubridate::day(Sys.Date))
+      end_day = lubridate::day(Sys.Date()))
 
   }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
   }
@@ -235,7 +238,7 @@ for(i in Hydrometric_List) {
 # For loop for Climate stations (air temperature at ECCC airport stations)
 
 directory = paste0(user, "Documents/R_Scripts/Packages/nwtclimate/data/")
-merged_data = "ECCC_Climate_Data_Merged.rds"
+merged_data = "ECCC_Climate_Data_Merged"
 cd_rds <- readRDS(paste0(directory, merged_data))
 
 cd_rds <- readRDS(paste0(data_path, merged_data, ".rds"))
@@ -249,7 +252,7 @@ for(i in Climate_List) {
           start_month = climate_start_month,
           start_day = climate_start_day,
           end_month = lubridate::month(Sys.Date()),
-          end_day = lubridate::day(Sys.Date))
+          end_day = lubridate::day(Sys.Date()))
 
   }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
@@ -262,7 +265,7 @@ for(i in Climate_List) {
 ###################################################################################################
 
 Flows(
-  station_number = "07KE001", 
+  station_number = "07OB008", 
   select_years = c(2025, 2026),
   log_scale = F,
   cumulative = F,
@@ -300,21 +303,23 @@ p
 ###################################################################################################
 
 Double_Level_Plot(
-  station_number = "10DA001",
+  station_number = "07OB008",
   station_title = FALSE,
-  start_month = "04",
+  start_month = "03",
   start_day = "01",
-  end_month = "05", 
+  end_month = "03", 
   end_day = "15"
 )
 
 ###################################################################################################
 
 Flows_HighRes(
-  station_number = "10CD001",
+  station_number = "10EB001",
   previous_days = 20,
   plot_width = 16, 
-  plot_height = 10 
+  plot_height = 10,
+  start_date = as.Date("2025-07-08"),
+  end_date = as.Date("2025-07-13")
 )
 
 ###################################################################################################
@@ -336,8 +341,8 @@ test<- Levels.HighRes2(station_number = "10EB001",
                        y_max = NA,
                        plot_width = 18,
                        plot_height = 10,
-                       start_date = as.Date("2024-07-08"),
-                       end_date = as.Date("2024-07-13"))
+                       start_date = as.Date("2025-07-08"),
+                       end_date = as.Date("2025-07-13"))
 
 plotly::ggplotly(test) %>%
   plotly::ggplotly(tooltip = c("y", "x", "Year")) 
@@ -361,9 +366,9 @@ Temps(
   
   site = "Fort Simpson",
   variable = "mean",
-  select_year = 2024,
+  select_year = 2025,
   start_year = 1991,
-  end_year = 2023,
+  end_year = 2024,
   ymin = -30, 
   ymax = 30,
   start_month = 04,
