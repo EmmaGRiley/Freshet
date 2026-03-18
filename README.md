@@ -11,7 +11,7 @@ The two main scripts are:
 
 Supporting scripts:
 
-- **image_download_utils.R** – Functions for retrieving gauge photos from Water Survey of Canada.
+- **image_download_utils.R** – Functions for retrieving gauge photos from Water Survey of Canada. You will need to fill in the username and password on line 177.
 - **Station_photos_lists.R** – Defines which stations have available gauge photos.
 
 ---
