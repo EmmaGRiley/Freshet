@@ -174,7 +174,7 @@ build_station_photo_history <- function(days_back = 10) {
     # Get directory listing once for the region
     dir_response <- httr::GET(
       base_url,
-      httr::authenticate("nhs_partner", "N0Lvr!p@")
+      httr::authenticate("", "")
     )
     
     if (httr::status_code(dir_response) == 200) {
