@@ -130,8 +130,8 @@ retrieve_image <- function(selected_station, selected_date, previous_day = FALSE
     station_id = selected_station,
     date = selected_date,
     region = region,
-    username = "nhs_partner",
-    password = "N0Lvr!p@"
+    username = "",
+    password = ""
   )
   
   if (!is.null(result)) {
