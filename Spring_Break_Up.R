@@ -46,6 +46,9 @@ source(paste0(freshet_path, "/Station_photos_lists.R"))
 source(paste0(user, "Documents/R_Scripts/Functions/Workflows/nwtclimate_functions.R"))
 source(paste0(user, "/R_Scripts/Functions/Workflows/update_climate.R"))
 
+#redefine user after nwtclimate_functions.R call
+user <- paste0("C:/Users/", tolower(Sys.getenv("USERNAME")), "/")
+
 # import csv of historical peaks
 peak_data <- read_excel(paste0(freshet_path, "/data/Historic_Peaks_rough.xlsx"))
 
