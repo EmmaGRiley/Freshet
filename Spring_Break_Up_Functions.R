@@ -1518,7 +1518,7 @@ get_basin_maps <- function(basin_name, Hydrometric_List) {
 generate_spring_breakup_report <- function(Hydrometric_List, output_path, Climate_List = NULL,
                                             climate_start_month = 03, climate_start_day = 01,
                                             plot_start_month = "03", plot_start_day = "01",
-                                            Weather_URLs = NULL) {
+                                            Weather_URLs = NULL, days_back) {
   
   doc <- officer::read_docx(path = paste0(freshet_path, "Template_BreakUpReport.docx"))
   
@@ -1676,8 +1676,8 @@ generate_spring_breakup_report <- function(Hydrometric_List, output_path, Climat
     if (station %in% Stations_w_images) {
       tryCatch({
         
-        # Retrieve all images from the last day (days_back = 1)
-        images_info <- retrieve_all_recent_images(station, days_back = 1)
+        # Retrieve all images from the last day (days_back = days_back)
+        images_info <- retrieve_all_recent_images(station, days_back = days_back)
         
         # Extract image paths
         image_paths <- lapply(images_info, function(x) x$path)

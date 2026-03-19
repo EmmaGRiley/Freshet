@@ -171,7 +171,8 @@ tryCatch({
     climate_start_day = climate_start_day,
     plot_start_month = plot_start_month,
     plot_start_day = plot_start_day,
-    Weather_URLs = Weather_URLs
+    Weather_URLs = Weather_URLs,
+    days_back = 2
   )
   message("Report generated successfully at: ", output_path)
 }, error = function(e) {
