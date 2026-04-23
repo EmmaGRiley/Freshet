@@ -1,11 +1,6 @@
 # Define user
 user <- paste0("C:/Users/", tolower(Sys.getenv("USERNAME")), "/")
 
-#set time zone
-current_datetime <- with_tz(Sys.time(), tzone = "America/Edmonton")
-formatted_date <- format(current_datetime, "%Y_%m_%d")
-formatted_time <- format(current_datetime, "%H%M")
-
 #required libraries
 library(RSQLite)
 library(tidyhydat)
@@ -28,6 +23,11 @@ library(flextable)
 library(tidyquant)
 library(readxl)
 library(webshot)
+
+#set time zone
+current_datetime <- with_tz(Sys.time(), tzone = "America/Edmonton")
+formatted_date <- format(current_datetime, "%Y_%m_%d")
+formatted_time <- format(current_datetime, "%H%M")
 
 #Source files/functions
 
