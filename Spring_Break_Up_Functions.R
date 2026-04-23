@@ -944,12 +944,12 @@ Double_Level_Plot <- function(
     hcl(h=hues, l=65, c=100)[1:n]
   }
   
-  # Dynamically generate default color values, but have 2025 =" black".
+  # Dynamically generate default color values, but have 2026 =" black".
   
-  adj_names = sort(setdiff(unique(new.data$Year), "2025"))
+  adj_names = sort(setdiff(unique(new.data$Year), "2026"))
   values = gg_color_hue(length(adj_names))
   names(values) = adj_names
-  values = c(values, c("2025" = "black"))
+  values = c(values, c("2026" = "black"))
   
   if(length(unique(new.data$Year_Real)) <= 25) {
     legend_number <- 1
@@ -981,7 +981,7 @@ Double_Level_Plot <- function(
     ggplot2::scale_y_continuous() +
     #ggplot2::geom_point(ggplot2::aes(colour = factor(Year_Real)), shape = 19, size = point_size) + 
     ggplot2::geom_line(ggplot2::aes(colour = factor(Year_Real)), linewidth = line_size) +
-    ggplot2::geom_line(data = new.data[new.data$Year_Real == 2025,], linewidth = line_size + 1) +
+    ggplot2::geom_line(data = new.data[new.data$Year_Real == 2026,], linewidth = line_size + 1) +
     ggplot2::scale_colour_manual(name = "", 
                                  values = values,
                                  na.translate = FALSE) # eliminates 'NA' from legend
